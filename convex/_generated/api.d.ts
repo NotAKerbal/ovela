@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as management from "../management.js";
+import type * as profile from "../profile.js";
 import type * as security from "../security.js";
 import type * as token from "../token.js";
 
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
   management: typeof management;
+  profile: typeof profile;
   security: typeof security;
   token: typeof token;
 }>;

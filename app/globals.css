@@ -75,3 +75,18 @@ label { display: block; font-size: 15px; line-height: 1.5; margin-bottom: 18px; 
 .home-leaving .empty-state, .home-leaving > .app-grid[aria-busy] { animation: tile-depart 520ms ease both; }
 @keyframes paper-wash { from { transform: scale(.015) rotate(-13deg); opacity: 0; } 20% { opacity: .8; } to { transform: scale(1) rotate(7deg); opacity: 1; } }
 @keyframes tile-depart { from { opacity: 1; transform: none; } 25% { opacity: 1; } to { opacity: 0; transform: translateY(8px) scale(.98); } }
+
+.profile-identity { display: flex; align-items: center; gap: 24px; margin: 32px 0 20px; }
+.profile-identity h2 { font-size: 23px; font-weight: 500; margin: 0 0 8px; }
+.profile-identity p { margin: 0; overflow-wrap: anywhere; }
+.profile-avatar { display: grid; place-items: center; flex: 0 0 88px; width: 88px; height: 88px; background: #c2c9b5; color: #516348; border: 1px solid #fff9; box-shadow: 0 3px 10px #40452c18; border-radius: 50%; overflow: hidden; font-size: 34px; }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-photo-actions { display: flex; align-items: center; gap: 24px; }
+.photo-help { font-size: 13px; }
+.header-actions .account-link { display: flex; align-items: center; gap: 10px; max-width: 220px; }
+.account-link span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.header-avatar { flex: 0 0 30px; width: 30px; height: 30px; object-fit: cover; border-radius: 50%; }
+.page-wash-in { mask: url('/bloom.svg') center / 350% 350% no-repeat; animation: page-wash-in 720ms cubic-bezier(.12,.65,.2,1) both; }
+@keyframes page-wash-in { from { opacity: 0; mask-size: 0% 0%; transform: translateY(8px); } 40% { opacity: 1; } to { opacity: 1; mask-size: 350% 350%; transform: none; } }
+@media (max-width: 640px) { .header-actions .account-link { max-width: 150px; }.profile-identity { gap: 16px; }.profile-identity h2 { font-size: 20px; } }
+@media (prefers-reduced-motion: reduce) { .page-wash-in { mask: none; } }
