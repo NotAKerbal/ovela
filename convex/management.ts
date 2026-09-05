@@ -69,6 +69,6 @@ export const saveApplication = mutation({ args: { id: v.optional(v.id('applicati
   const palette = { photos: ['#bcc5ac', '#516348'], files: ['#d8c6a5', '#80633d'], media: ['#aebfc6', '#456575'], notes: ['#d4b7a7', '#875e4a'] };
   const [color, ink] = palette[args.icon];
   const data = { name, description, url, icon: args.icon, color, ink };
-  if (args.id) { const existing = await ctx.db.get(args.id); if (!existing) throw new ConvexError('Application not found.'); if (existing.provider === 'immich' && url !== existing.url) throw new ConvexError('Configure the bundled Photos address using IMMICH_URL.'); await ctx.db.patch(args.id, data); return args.id; }
+  if (args.id) { const existing = await ctx.db.get(args.id); if (!existing) throw new ConvexError('Application not found.'); if (existing.provider && url !== existing.url) throw new ConvexError(`Configure this provider address using ${existing.provider === 'immich' ? 'IMMICH_URL' : 'PELICAN_URL'}.`); await ctx.db.patch(args.id, data); return args.id; }
   return await ctx.db.insert('applications', data);
 } });

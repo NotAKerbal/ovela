@@ -32,6 +32,8 @@ services:
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-}
       SITE_URL: ${SITE_URL:-http://127.0.0.1:3000}
       OVELA_FILES_SECRET: ${BETTER_AUTH_SECRET:-}
+      PELICAN_URL: ${PELICAN_URL:-}
+      OVELA_PELICAN_CLIENT_SECRET: ${OVELA_PELICAN_CLIENT_SECRET:-}
       OVELA_SETUP_TOKEN: ${OVELA_SETUP_TOKEN:-}
     command: ["sh", "scripts/selfhost-deploy.sh"]
   app:

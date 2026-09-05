@@ -28,7 +28,7 @@ cd ovela
 
 Open the private setup link printed by the second command and create your first administrator account. The default app address is `http://127.0.0.1:3000`. The first build downloads dependencies and container images. Subsequent starts reuse them.
 
-The stack runs Next.js, the Convex backend, Immich, and Collabora in Docker. Photos opens the bundled Immich library with Ovela sign-in; see [Immich setup and storage](docs/immich.md). Better Auth runs inside Convex. Database and file data persist in a Docker volume; secrets remain in the ignored, owner-readable `.env.selfhost` file. See [self-hosting](docs/self-hosting.md) for domain configuration, backups, upgrades, and alternate ports.
+The stack runs Next.js, the Convex backend, Immich, and Collabora in Docker. Photos opens the bundled Immich library with Ovela sign-in; see [Immich setup and storage](docs/immich.md). An existing Pelican panel can optionally use Ovela sign-in; see [Pelican setup](docs/pelican.md). Better Auth runs inside Convex. Database and file data persist in a Docker volume; secrets remain in the ignored, owner-readable `.env.selfhost` file. See [self-hosting](docs/self-hosting.md) for domain configuration, backups, upgrades, and alternate ports.
 
 ## Features
 

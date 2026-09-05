@@ -16,6 +16,9 @@ case "${1:-up}" in
         printf '\n%s=%s\n' "$key" "$(openssl rand -hex 32)" >> "$config"
       fi
     done
+    if grep -q '^PELICAN_URL=.' "$config" && ! grep -q '^OVELA_PELICAN_CLIENT_SECRET=.' "$config"; then
+      printf '\nOVELA_PELICAN_CLIENT_SECRET=%s\n' "$(openssl rand -hex 32)" >> "$config"
+    fi
     if ! grep -q '^IMMICH_URL=.' "$config"; then
       site=$(sed -n 's/^SITE_URL=//p' "$config" | tail -1)
       immich_port=$(sed -n 's/^IMMICH_PORT=//p' "$config" | tail -1)
