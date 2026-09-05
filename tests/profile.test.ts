@@ -22,6 +22,17 @@ async function person(t: ReturnType<typeof backend>, email: string) {
 const image = Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jP1sAAAAASUVORK5CYII='), c => c.charCodeAt(0)).buffer;
 
 describe('profile photos', () => {
+  it('returns only the signed-in active identity for Photos', async () => {
+    const t = backend();
+    const alice = await person(t, 'alice@example.com');
+    const bob = await person(t, 'bob@example.com');
+    const own = await alice.client.query(api.profile.identity);
+    expect(own?.name).toBe('alice@example.com');
+    expect(own?.subject).not.toBe((await bob.client.query(api.profile.identity))?.subject);
+    expect(await t.query(api.profile.identity)).toBeNull();
+    await t.run(ctx => ctx.db.patch(alice.id, { suspended: true }));
+    expect(await alice.client.query(api.profile.identity)).toBeNull();
+  });
   it('stores an own photo, replaces and removes its files, leaving other users untouched', async () => {
     const t = backend();
     const alice = await person(t, 'alice@example.com');

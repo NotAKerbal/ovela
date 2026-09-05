@@ -64,3 +64,20 @@ export const remove = mutation({
     }
   },
 });
+
+// Shared profile data is always scoped to the current Ovela session.
+export const identity = query({
+  args: {},
+  handler: async ctx => {
+    const person = await currentPerson(ctx);
+    if (!person || person.suspended) return null;
+    const url = person.photoId ? await ctx.storage.getUrl(person.photoId) : null;
+    return { subject: person.authId, name: person.name, picture: publicProfilePicture(url) };
+  },
+});
+
+export function publicProfilePicture(storageUrl: string | null) {
+  if (!storageUrl || !process.env.SITE_URL) return null;
+  const id = new URL(storageUrl).pathname.split('/').pop();
+  return id ? `${process.env.SITE_URL.replace(/\/$/, '')}/api/profile-image/${encodeURIComponent(id)}` : null;
+}

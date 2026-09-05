@@ -121,7 +121,8 @@ async function assertPhotosAccess(ctx: GenericCtx<DataModel>, authId: string) {
 async function photosClaims(ctx: GenericCtx<DataModel>, authId: string) {
   await assertPhotosAccess(ctx, authId);
   const role: string = await ctx.runQuery(internal.sso.photosRole, { authId });
-  return { immich_role: role };
+  const profile: { name: string; picture: string | null } | null = await ctx.runQuery(internal.sso.photosProfile, { authId });
+  return { immich_role: role, ...(profile ? { name: profile.name, ...(profile.picture ? { picture: profile.picture } : {}) } : {}) };
 }
 
 function oidcKey(key: Doc<'oidcKeys'>) {

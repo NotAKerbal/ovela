@@ -2,6 +2,8 @@
 # https://github.com/immich-app/immich/releases/tag/v3.1.0
 services:
   app:
+    environment:
+      IMMICH_URL: ${IMMICH_URL:-http://127.0.0.1:2283}
     ports:
       - "${IMMICH_BIND_ADDRESS:-127.0.0.1}:${IMMICH_PORT:-2283}:2283"
   tools:
@@ -11,7 +13,12 @@ services:
     volumes:
       - immich_config:/config
   immich-server:
-    image: ghcr.io/immich-app/immich-server:v3.1.0
+    image: ovela-immich:v3.1.0
+    build:
+      context: .
+      dockerfile: Dockerfile.immich
+      args:
+        VITE_OVELA_HOME_URL: ${SITE_URL:-http://127.0.0.1:3000}
     restart: unless-stopped
     # Both services must reach the same localhost OIDC issuer during local setup.
     network_mode: service:app

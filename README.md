@@ -35,6 +35,7 @@ The stack runs Next.js, the Convex backend, and Immich in Docker. Photos opens t
 - First-administrator setup with a private setup key.
 - Email/password sign-in, password changes, and local profile photos.
 - Shared Ovela sign-in for the bundled Immich photo library.
+- Ovela Photos web theme with desktop sidebar, mobile bottom navigation, and three-column mobile photos.
 - People and application management using the approved visual designs.
 - Copyable, email-bound invitations that expire after seven days. Reissuing or revoking a link invalidates it.
 - Member/Admin roles, per-person app visibility, suspension, and last-active-admin protection.
@@ -93,4 +94,4 @@ The prototype originally had a standalone hosted visual demo. Ovela's current im
 
 ## License
 
-Ovela is [MIT licensed](LICENSE). Bundled services retain their own licenses; Immich is AGPLv3 and runs as an unmodified, separate service.
+Ovela is [MIT licensed](LICENSE). Bundled services retain their own licenses; Immich and the Ovela Photos web overrides are AGPLv3; see [Ovela Photos](immich/README.md) for source and build details.

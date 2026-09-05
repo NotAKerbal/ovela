@@ -1,0 +1,32 @@
+# syntax=docker/dockerfile:1
+# Build the UI only; Immich's API, workers, and native dependencies stay upstream.
+FROM node:24-bookworm-slim AS web
+WORKDIR /src
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install --global pnpm@11.13.1
+RUN curl -fsSL https://codeload.github.com/immich-app/immich/tar.gz/8aa95c67470a02a8ddedf03c2e52963af33065ff -o /tmp/immich.tar.gz \
+    && echo '60f943f5181e4e8bb5064623a0554964dbe7dbe283063b26a9e8a2068b3e7d90  /tmp/immich.tar.gz' | sha256sum -c - \
+    && tar -xzf /tmp/immich.tar.gz --strip-components=1 \
+    && rm /tmp/immich.tar.gz
+ENV CI=1 SHARP_IGNORE_GLOBAL_LIBVIPS=true
+RUN --mount=type=cache,id=ovela-immich-pnpm,target=/pnpm/store \
+    pnpm --store-dir /pnpm/store --filter @immich/sdk --filter immich-web install --frozen-lockfile --force
+COPY immich/overlay/ /src/
+COPY immich/README.md /src/OVELA-README.md
+COPY Dockerfile.immich /src/OVELA-Dockerfile
+ARG VITE_OVELA_HOME_URL=http://127.0.0.1:3000
+ENV VITE_OVELA_HOME_URL=${VITE_OVELA_HOME_URL}
+RUN node -e 'const u = new URL(process.env.VITE_OVELA_HOME_URL); if (!["http:", "https:"].includes(u.protocol) || u.username || u.password) throw new Error("Ovela home must be an HTTP(S) URL without credentials")' \
+    && pnpm --filter @immich/sdk --filter immich-web build
+# Offer the full corresponding modified source directly from every installation.
+RUN tar --exclude='*/node_modules' --exclude='*/.svelte-kit' --exclude='*/build' \
+    --exclude='*/.git' --exclude='*/.pnpm-store' -czf /tmp/ovela-source.tgz -C /src . \
+    && cp /tmp/ovela-source.tgz /src/web/build/ovela-source.tgz
+
+FROM ghcr.io/immich-app/immich-server:v3.1.0
+COPY --from=web /src/web/build /build/www
+LABEL org.opencontainers.image.title="Ovela Photos (Immich)" \
+      org.opencontainers.image.source="https://github.com/NotAKerbal/ovela" \
+      org.opencontainers.image.licenses="AGPL-3.0" \
+      org.opencontainers.image.description="Immich v3.1.0 with Ovela's web interface; corresponding source at /ovela-source.tgz"

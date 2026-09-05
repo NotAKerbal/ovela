@@ -2,6 +2,7 @@ import { internalMutation, internalQuery } from './_generated/server';
 import { v } from 'convex/values';
 import { authComponent, createAuthOptions } from './auth';
 import { hashToken } from './token';
+import { publicProfilePicture } from './profile';
 
 export const canAccessPhotos = internalQuery({
   args: { authId: v.string() },
@@ -49,5 +50,15 @@ export const createOidcKey = internalMutation({
   handler: async (ctx, key) => {
     const id = await ctx.db.insert('oidcKeys', { ...key, createdAt: Date.now() });
     return (await ctx.db.get(id))!;
+  },
+});
+
+export const photosProfile = internalQuery({
+  args: { authId: v.string() },
+  handler: async (ctx, { authId }) => {
+    const person = await ctx.db.query('people').withIndex('by_auth', q => q.eq('authId', authId)).unique();
+    if (!person || person.suspended) return null;
+    const url = person.photoId ? await ctx.storage.getUrl(person.photoId) : null;
+    return { name: person.name, picture: publicProfilePicture(url) };
   },
 });

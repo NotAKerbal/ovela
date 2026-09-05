@@ -1,6 +1,6 @@
 # Photos with Immich
 
-Ovela includes the official [Immich v3.1.0 release](https://github.com/immich-app/immich/releases/tag/v3.1.0) as its photo provider. The Photos application opens Immich's own interface. Ovela manages sign-in through OpenID Connect; the Immich interface is unchanged.
+Ovela includes the official [Immich v3.1.0 release](https://github.com/immich-app/immich/releases/tag/v3.1.0) as its photo provider. The Photos application opens Ovela's reskin of the Immich web interface. Ovela manages sign-in through OpenID Connect. Photo storage, processing, search, uploads, albums, sharing, and viewer actions remain Immich. The native Immich mobile app is unchanged; the reskin applies to desktop and mobile web.
 
 Run `./ovela up` to start the package. The launcher creates private database and OAuth client secrets, writes Immich's configuration into a Docker volume, and starts the services. Open Photos from Ovela after creating your Ovela administrator account. The default Immich address is `http://127.0.0.1:2283`.
 
@@ -35,4 +35,4 @@ Immich's OAuth and password-login settings come from the generated config and ca
 
 The server and machine learning containers use the same exact release tag. PostgreSQL and Valkey are pinned to the images from that release's official Compose file. Review Immich's release notes and back up data before changing these versions; do not update only one of the two Immich containers.
 
-Immich is a separate project distributed under the [GNU AGPL v3 license](https://github.com/immich-app/immich/blob/v3.1.0/LICENSE). This package runs its official, unmodified images. Immich's source is available from the linked release.
+Immich is a separate project distributed under the [GNU AGPL v3 license](https://github.com/immich-app/immich/blob/v3.1.0/LICENSE). This package builds a modified web client over the official server image. The UI modifications retain AGPLv3 and each installation offers its corresponding source from the sidebar's source-code link. See [the overlay build instructions](../immich/README.md).

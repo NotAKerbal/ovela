@@ -34,7 +34,7 @@ case "${1:-up}" in
     compose build tools
     compose run --rm -T tools
     compose run --rm -T tools node scripts/immich-config.mjs
-    compose build app
+    compose build app immich-server
     compose up -d --wait --wait-timeout 600
     echo 'Ovela is running. Use ./ovela setup to show your private first-admin link.'
     ;;

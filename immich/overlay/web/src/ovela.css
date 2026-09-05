@@ -1,0 +1,115 @@
+/* Ovela's paper and glass theme. Motion stays on opacity and transforms. */
+:root {
+  --ovela-paper: #f3f0e8;
+  --ovela-ink: #30352f;
+  --ovela-line: #d8d4c8;
+  --ovela-sage: #778168;
+  --immich-primary: 91 108 73;
+  --immich-bg: 243 240 232;
+  --immich-fg: 48 53 47;
+  --immich-dark-primary: 186 199 165;
+  --immich-dark-bg: 35 39 34;
+  --immich-dark-fg: 237 235 226;
+  --immich-dark-gray: 47 52 44;
+  --navbar-height: 80px;
+  --navbar-height-md: 72px;
+}
+:root.dark { --ovela-paper: #232722; --ovela-ink: #edebe2; --ovela-line: #43483e; --ovela-sage: #bbc7a6; }
+body { background: var(--ovela-paper); color: var(--ovela-ink); }
+.ovela-user-shell { --navbar-height: 80px; --navbar-height-md: 72px; }
+.ovela-user-shell.ovela-photos-page { --navbar-height: 80px; --navbar-height-md: 72px; }
+.ovela-navbar { position: relative; z-index: 30; width: 100%; color: var(--ovela-ink); background: var(--ovela-paper) url('/ovela/grain.svg'); }
+.ovela-topbar { height: 80px; display:flex; align-items:center; justify-content:space-between; padding:0 34px; border-bottom:1px solid var(--ovela-line); }
+.ovela-brand { display:inline-flex; align-items:center; gap:15px; font-size:26px; font-weight:550; letter-spacing:-1px; }
+/* Reuses the four-tile Ovela mark from the hub. */
+.ovela-brand-mark { width:34px; height:36px; display:grid; grid-template-columns:1fr 1fr; gap:3px; }
+.ovela-brand-mark i { border-radius:2px; background:#818d70; box-shadow:inset 0 1px 1px #fff5; }
+.ovela-brand-mark i:nth-child(2) { background:#bda982; }
+.ovela-brand-mark i:nth-child(3) { background:#bb8f77; }
+.ovela-brand-mark i:nth-child(4) { background:#8e9d9d; }
+.ovela-header-actions { display:flex; align-items:center; gap:30px; }
+.ovela-account { display:flex; align-items:center; gap:22px; padding:4px; font-size:17px; }
+.ovela-account figure { width:38px; height:42px; border-radius:6px; }
+.ovela-notifications:empty { display:none; }
+.ovela-upload { display:inline-flex; align-items:center; justify-content:center; gap:12px; min-height:46px; padding:10px 20px; border-radius:5px; border:1px solid #8a927c; color:#fff; background:#8b9776 url('/ovela/grain.svg'); box-shadow:inset 0 0 0 2px #ffffff26,inset 0 1px 1px #fff7,0 3px 1px -1px #798168,0 7px 14px -9px #30352f; transition:transform 150ms ease; }
+.ovela-upload:hover { transform:translateY(-1px); }
+.ovela-upload:active { transform:translateY(1px); }
+.ovela-upload-small { padding:10px; }
+.ovela-mobile-search { display:none; }
+#main-search-bar { border:1px solid var(--ovela-line); border-radius:6px; background:transparent; color:var(--ovela-ink); padding-top:12px; padding-bottom:12px; font-size:15px; }
+#main-search-bar:focus { border-color:var(--ovela-sage); }
+.ovela-user-layout { grid-template-columns:var(--ovela-sidebar-width) minmax(0,1fr); background:var(--ovela-paper) url('/ovela/grain.svg'); }
+.ovela-sidebar { width:var(--ovela-sidebar-width); background:transparent; border-right:1px solid var(--ovela-line); padding:12px 14px; }
+.ovela-sidebar-inner { gap:5px; }
+.ovela-sidebar a { border-radius:5px; font-size:15px; }
+.ovela-sidebar a[aria-current='page'] { background:#8c987327; color:var(--ovela-sage); }
+.ovela-sidebar-spacer { height:26px; flex-shrink:0; }
+.ovela-sidebar-footer { margin-top:auto; padding-top:28px; color:var(--ovela-sage); }
+.ovela-sidebar-footer > a { display:block; font-size:11px; padding:16px 12px 8px; text-decoration:underline; text-underline-offset:3px; }
+.ovela-more-routes summary { cursor:pointer; padding:12px 16px; font-size:14px; color:var(--ovela-sage); }
+.ovela-content { min-width:0; }
+.ovela-page-scroll { padding:8px 44px 20px; }
+.ovela-content [data-group] img { border-radius:0; }
+.ovela-content [data-group] { transition-property:opacity,transform; }
+.ovela-mobile-nav { display:none; }
+#account-info-panel { background:var(--ovela-paper); border:1px solid var(--ovela-line); border-radius:10px; box-shadow:0 12px 36px #282f2320; z-index:50; }
+#account-info-panel > div { background:transparent; border-radius:6px; }
+#account-info-panel button, #account-info-panel a { border-radius:5px; }
+.ovela-empty { min-height:55vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; color:var(--ovela-sage); padding:32px; text-align:center; }
+.ovela-empty h2 { color:var(--ovela-ink); font-size:24px; font-weight:500; }
+.ovela-empty p { max-width:320px; font-size:15px; line-height:1.7; }
+.ovela-empty > svg { opacity:.55; }
+.ovela-content { animation:ovela-arrive 240ms ease-out both; }
+@keyframes ovela-arrive { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+:where(.ovela-navbar,.ovela-mobile-nav,.ovela-sidebar) :is(a,button,summary):focus-visible { outline:2px solid var(--ovela-sage); outline-offset:3px; }
+@media(max-width:849px) {
+  .ovela-topbar { height:72px; padding:0 20px; }
+  .ovela-brand { font-size:25px; gap:12px; }
+  .ovela-brand-mark { width:30px; height:32px; }
+  .ovela-header-actions { gap:12px; }
+  .ovela-account { gap:10px; }
+  .ovela-account-name,.ovela-manage { display:none; }
+  .ovela-desktop-search { display:none; }
+  .ovela-mobile-search { display:flex; align-items:center; justify-content:center; width:44px; height:44px; }
+  .ovela-upload { width:44px; height:44px; min-height:44px; padding:8px; }
+  .ovela-upload span { display:none; }
+  .ovela-user-layout { grid-template-columns:0 minmax(0,1fr); height:calc(100dvh - 72px - 72px - env(safe-area-inset-bottom)); }
+  .ovela-photos-page .ovela-user-layout { height:calc(100dvh - 72px - 72px - env(safe-area-inset-bottom)); }
+  .ovela-selecting .ovela-user-layout { height:100dvh; }
+  .ovela-sidebar { position:fixed; left:0; top:72px; bottom:calc(72px + env(safe-area-inset-bottom)); width:min(300px,85vw); background:var(--ovela-paper); z-index:45; box-shadow:12px 0 35px #20261b26; padding:14px; transition:transform 180ms ease; }
+  .ovela-sidebar[inert] { transform:translateX(-110%); visibility:hidden; }
+  .ovela-sidebar:not([inert]) { transform:translateX(0); }
+  .ovela-page-scroll { padding:0 6px 12px; }
+  .ovela-mobile-nav { position:fixed; z-index:50; bottom:0; left:0; right:0; height:calc(72px + env(safe-area-inset-bottom)); padding:6px 12px calc(6px + env(safe-area-inset-bottom)); display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; background:var(--ovela-paper); border-top:1px solid var(--ovela-line); }
+  .ovela-mobile-nav > :is(a,button) { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:12px; border-radius:7px; }
+  .ovela-mobile-nav [aria-current='page'],.ovela-mobile-nav [aria-expanded='true'] { background:#8c987327; color:var(--ovela-sage); }
+  #account-info-panel { top:68px; right:12px; max-height:calc(100dvh - 152px); overflow:auto; }
+  .ovela-more-routes { margin-bottom:8px; }
+}
+@media(prefers-reduced-motion:reduce) { .ovela-content { animation:none; }.ovela-upload,.ovela-sidebar { transition:none; } }
+:root {
+  --font-sans: Arial, Helvetica, sans-serif;
+  --immich-ui-primary-50: #f0f3e9; --immich-ui-primary-100: #e2e8d7; --immich-ui-primary-200: #cdd7bc;
+  --immich-ui-primary-300: #b2c099; --immich-ui-primary-400: #919f7b; --immich-ui-primary-500: #67784e;
+  --immich-ui-primary-600: #566440; --immich-ui-primary-700: #465236; --immich-ui-primary-800: #37422b;
+  --immich-ui-primary-900: #293320; --immich-ui-primary-950: #1a2115;
+  --immich-ui-light: #f3f0e8; --immich-ui-light-100: #eeeae1; --immich-ui-light-200: #e5e0d5;
+  --immich-ui-dark: #30352f; --immich-ui-default-border: #d8d4c8;
+}
+:root.dark { --immich-ui-primary-500: #b8c89f; --immich-ui-primary-100: #333d2b; --immich-ui-primary-50: #2a3125; --immich-ui-light: #232722; --immich-ui-light-100: #2c3129; --immich-ui-light-200: #383f32; --immich-ui-dark: #edebe2; --immich-ui-default-border: #43483e; }
+.ovela-storage { min-width:0; padding:10px 8px; font-size:11px; }
+.ovela-storage-skeleton { width:100%; height:6px; background:var(--ovela-line); border-radius:3px; }
+.ovela-account figure:not(:has(img)) { background:#bac3a8; color:#37442e; }
+.ovela-empty .ovela-upload { width:auto; min-width:110px; }
+.ovela-content { grid-column:2; }
+@media(max-width:849px) { .ovela-sidebar { top:var(--navbar-height-md); } }
+.ovela-placeholder { background:transparent; border:0; border-radius:0; width:min(420px,calc(100% - 32px)); margin:56px auto; padding:24px; gap:24px; }
+.ovela-placeholder img { width:140px; opacity:.7; }
+.ovela-placeholder p { line-height:1.6; color:var(--ovela-sage); }
+.ovela-placeholder:where(button):hover { background:#8c987310; }
+
+:root { --ovela-sidebar-width: clamp(210px,18.4vw,282px); }
+
+.ovela-topbar { gap:32px; }
+.ovela-topbar > .ovela-desktop-search { width:min(440px,40vw); margin-inline:auto; }
+@media(max-width:849px) { .ovela-topbar { gap:12px; padding:0 16px; } .ovela-header-actions { gap:8px; } .ovela-upload span { display:none; } .ovela-upload { padding:10px; } }
