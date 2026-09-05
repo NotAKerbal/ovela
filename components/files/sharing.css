@@ -1,0 +1,213 @@
+.share-mode {
+  margin-bottom: 24px;
+}
+.share-link-fields {
+  display: grid;
+  grid-template-columns: 1fr 150px;
+  gap: 16px;
+}
+.share-link-fields label {
+  display: block;
+}
+.share-link-fields input,
+.share-link-fields select {
+  margin-top: 8px;
+}
+.share-link-fields label > span {
+  font-size: 12px;
+}
+.share-permission-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 !important;
+}
+.share-created-link {
+  display: grid;
+  grid-template-columns: 1fr 36px;
+  align-items: end;
+  gap: 8px;
+  margin: 24px 0;
+}
+.share-created-link small {
+  grid-column: 1/-1;
+  color: var(--muted);
+  font-size: 12px;
+}
+.share-created-link input {
+  font-size: 12px;
+}
+.share-existing-links > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding: 14px 0;
+}
+.share-existing-links > div > span {
+  flex: 1;
+  font-size: 14px;
+}
+.share-existing-links span svg {
+  margin-left: 8px;
+  color: var(--muted);
+}
+.share-existing-links small {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+  font-size: 12px;
+}
+@media (max-width: 500px) {
+  .share-link-fields {
+    grid-template-columns: 1fr;
+  }
+}
+.shared-workspace {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  --ink: var(--text);
+  --sage: var(--button-base);
+}
+.shared-header {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.shared-header .brand {
+  flex: none;
+}
+.shared-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  overflow: auto;
+  white-space: nowrap;
+  font-size: 14px;
+}
+.shared-breadcrumb button {
+  border: 0;
+  background: none;
+  color: var(--text);
+  padding: 5px;
+}
+.shared-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.shared-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+}
+.shared-message {
+  max-width: 440px;
+  width: 100%;
+  margin: auto;
+  padding: 32px;
+}
+.shared-message h1 {
+  font-size: 26px;
+  font-weight: 500;
+}
+.shared-message p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.shared-message label {
+  display: grid;
+  gap: 10px;
+}
+.shared-message input {
+  width: 100%;
+  padding: 12px;
+  background: var(--field);
+  border: 1px solid var(--line);
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.shared-message .primary-button {
+  width: 100%;
+}
+.shared-list {
+  list-style: none;
+  margin: 0;
+  padding: 24px clamp(16px, 5vw, 60px);
+}
+.shared-list li {
+  border-bottom: 1px solid var(--line);
+}
+.shared-list button {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 8px;
+  width: 100%;
+  border: 0;
+  background: none;
+  color: var(--text);
+  text-align: left;
+}
+.shared-list small {
+  margin-left: auto;
+  color: var(--muted);
+}
+.shared-content .ovela-text-editor,
+.shared-content .ovela-media-preview {
+  height: 100%;
+  min-height: 0;
+}
+.shared-header .files-tools-button,
+.shared-header .files-icon-button {
+  color: var(--text);
+}
+@media (max-width: 600px) {
+  .shared-header {
+    padding: 14px 16px;
+    gap: 12px;
+    min-height: 72px;
+  }
+  .shared-header .brand > span:last-child {
+    display: none;
+  }
+  .shared-header-actions {
+    gap: 5px;
+  }
+  .shared-header-actions .download-label {
+    display: none;
+  }
+  .shared-breadcrumb {
+    font-size: 12px;
+  }
+  .shared-breadcrumb > button:not(:last-child) {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.shared-breadcrumb > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.shared-breadcrumb > span:last-child button {
+  font-weight: 600;
+}
+.shared-content > .files-office-editor {
+  flex: 1;
+  height: auto !important;
+}
+.shared-list button:hover {
+  background: var(--field);
+}

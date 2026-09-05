@@ -1,0 +1,78 @@
+.files-sidebar-content .files-main-nav {
+  margin-bottom: 0;
+}
+.ovela-folder-navigation {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.ovela-folder-branches {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ovela-folder-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 5px 9px 5px calc(4px + var(--folder-depth) * 16px);
+  border-radius: 5px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  user-select: none;
+}
+.ovela-folder-row > svg {
+  flex-shrink: 0;
+}
+.ovela-folder-row > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ovela-folder-row:hover {
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+.ovela-folder-row.is-selected {
+  background: color-mix(in srgb, var(--sage) 22%, transparent);
+  color: var(--ink);
+  font-weight: 600;
+}
+.ovela-folder-row:focus-visible {
+  outline: 2px solid var(--sage);
+  outline-offset: -2px;
+}
+.ovela-folder-disclosure {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 24px;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.ovela-folder-disclosure:hover {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.ovela-folder-disclosure svg {
+  transition: transform 120ms ease;
+}
+.ovela-folder-row[aria-expanded="true"] .ovela-folder-disclosure svg {
+  transform: rotate(90deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ovela-folder-disclosure svg {
+    transition: none;
+  }
+}
+
+.ovela-folder-row > .ovela-tree-leaf-spacer {
+  width: 22px;
+  flex-shrink: 0;
+}

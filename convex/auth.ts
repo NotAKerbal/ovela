@@ -66,6 +66,8 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => ({
   } } } },
   session: { expiresIn: 60 * 60 * 24 * 7 },
   rateLimit: { enabled: true, storage: 'database', window: 60, max: 100, customRules: {
+    // Reading file previews and saving documents each authenticate through this endpoint.
+    '/convex/token': { window: 60, max: 600 },
     '/sign-in/email': { window: 60, max: 10 },
     '/sign-up/email': { window: 60, max: 5 },
   } },

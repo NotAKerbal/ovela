@@ -4,7 +4,7 @@ cd "$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 command -v docker >/dev/null 2>&1 || { echo 'Install Docker with Docker Compose first.' >&2; exit 1; }
 docker compose version >/dev/null
 config=.env.selfhost
-compose() { docker compose --env-file "$config" -f compose.yaml -f compose.immich.yaml "$@"; }
+compose() { docker compose --env-file "$config" -f compose.yaml -f compose.immich.yaml -f compose.files.yaml "$@"; }
 case "${1:-up}" in
   up)
     command -v openssl >/dev/null 2>&1 || { echo 'Install openssl first.' >&2; exit 1; }

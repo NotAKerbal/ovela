@@ -9,6 +9,11 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as files from "../files.js";
+import type * as filesOffice from "../filesOffice.js";
+import type * as filesOfficeSchema from "../filesOfficeSchema.js";
+import type * as fileLinks from "../fileLinks.js";
+import type * as fileLinksSchema from "../fileLinksSchema.js";
 import type * as http from "../http.js";
 import type * as management from "../management.js";
 import type * as profile from "../profile.js";
@@ -25,6 +30,11 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  files: typeof files;
+  filesOffice: typeof filesOffice;
+  filesOfficeSchema: typeof filesOfficeSchema;
+  fileLinks: typeof fileLinks;
+  fileLinksSchema: typeof fileLinksSchema;
   http: typeof http;
   management: typeof management;
   profile: typeof profile;

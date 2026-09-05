@@ -10,3 +10,5 @@ coverage/
 
 # Local browser verification captures
 /design/immich/*-built.png
+
+/.ovela-files/

@@ -1,0 +1,4 @@
+[data-move-state="holding"] { outline:1px solid var(--focus); outline-offset:-2px; }
+[data-move-state="moving"] { opacity:.55; cursor:grabbing; user-select:none; }
+[data-move-state="target"] { outline:2px solid var(--focus); outline-offset:-2px; background:color-mix(in srgb,var(--focus) 14%,var(--surface)) !important; }
+.files-move-indicator { position:fixed; z-index:70; pointer-events:none; padding:9px 13px; max-width:min(280px,70vw); color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:5px; box-shadow:0 5px 20px #0002; font-size:13px; line-height:1.5; }

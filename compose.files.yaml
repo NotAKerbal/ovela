@@ -1,0 +1,21 @@
+services:
+  app:
+    environment:
+      COLLABORA_URL: ${COLLABORA_URL:-http://127.0.0.1:9980}
+      COLLABORA_INTERNAL_URL: http://collabora:9980
+      OVELA_WOPI_URL: http://app:${APP_PORT:-3000}
+  collabora:
+    image: collabora/code:25.04.9.2.1
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${COLLABORA_PORT:-9980}:9980"
+    environment:
+      aliasgroup1: http://app:${APP_PORT:-3000}
+      extra_params: --o:ssl.enable=false --o:ssl.termination=${COLLABORA_TLS_TERMINATION:-false} --o:net.frame_ancestors=${SITE_URL:-http://127.0.0.1:3000} --o:home_mode.enable=${COLLABORA_HOME_MODE:-true} --o:user_interface.mode=compact
+    cap_add: [MKNOD]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9980/hosting/discovery"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s

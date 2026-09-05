@@ -31,6 +31,7 @@ services:
       CONVEX_SELF_HOSTED_ADMIN_KEY: ${CONVEX_SELF_HOSTED_ADMIN_KEY:-}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-}
       SITE_URL: ${SITE_URL:-http://127.0.0.1:3000}
+      OVELA_FILES_SECRET: ${BETTER_AUTH_SECRET:-}
       OVELA_SETUP_TOKEN: ${OVELA_SETUP_TOKEN:-}
     command: ["sh", "scripts/selfhost-deploy.sh"]
   app:
@@ -47,9 +48,13 @@ services:
       PORT: ${APP_PORT:-3000}
       NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-http://127.0.0.1:3210}
       NEXT_PUBLIC_CONVEX_SITE_URL: ${NEXT_PUBLIC_CONVEX_SITE_URL:-http://127.0.0.1:3211}
+      OVELA_FILES_PATH: /data/files
+      OVELA_FILES_SECRET: ${BETTER_AUTH_SECRET:-}
       CONVEX_INTERNAL_URL: http://backend:3210
       CONVEX_INTERNAL_SITE_URL: http://backend:3211
       SITE_URL: ${SITE_URL:-http://127.0.0.1:3000}
+    volumes:
+      - files_data:/data/files
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:' + process.env.PORT + '/sign-in').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 5s
@@ -61,3 +66,4 @@ services:
         condition: service_healthy
 volumes:
   convex_data:
+  files_data:

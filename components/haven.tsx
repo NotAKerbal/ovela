@@ -52,7 +52,7 @@ function AppTile({ app, index, onOpen }: { app: HavenApp; index: number; onOpen:
 
 export function Haven() {
   const available = useQuery(api.management.home);
-  const apps = available?.map(app => ({ ...app, id: app._id, href: app.url || undefined }));
+  const apps = available?.map(app => ({ ...app, id: app._id, href: app.icon === 'files' && !app.url ? '/files' : app.url || undefined }));
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
   const departure = useRef<ReturnType<typeof setTimeout> | null>(null);

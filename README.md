@@ -28,7 +28,7 @@ cd ovela
 
 Open the private setup link printed by the second command and create your first administrator account. The default app address is `http://127.0.0.1:3000`. The first build downloads dependencies and container images. Subsequent starts reuse them.
 
-The stack runs Next.js, the Convex backend, and Immich in Docker. Photos opens the bundled Immich library with Ovela sign-in; see [Immich setup and storage](docs/immich.md). Better Auth runs inside Convex. Database and file data persist in a Docker volume; secrets remain in the ignored, owner-readable `.env.selfhost` file. See [self-hosting](docs/self-hosting.md) for domain configuration, backups, upgrades, and alternate ports.
+The stack runs Next.js, the Convex backend, Immich, and Collabora in Docker. Photos opens the bundled Immich library with Ovela sign-in; see [Immich setup and storage](docs/immich.md). Better Auth runs inside Convex. Database and file data persist in a Docker volume; secrets remain in the ignored, owner-readable `.env.selfhost` file. See [self-hosting](docs/self-hosting.md) for domain configuration, backups, upgrades, and alternate ports.
 
 ## Features
 
@@ -42,11 +42,11 @@ The stack runs Next.js, the Convex backend, and Immich in Docker. Photos opens t
 - A live application catalog; changes appear in the home without a rebuild.
 - Keyboard access, responsive layouts, loading skeletons, and reduced-motion support.
 
-Invitations are copied and shared manually; Ovela does not send email. Photos connects to bundled Immich with shared Ovela sign-in. Files, Media, and Notes have no destination until configured. Photos grants are checked when signing into Immich; existing Immich sessions remain valid until they expire or are revoked in Immich. For unrelated applications, grants control launcher visibility only.
+Invitations are copied and shared manually; Ovela does not send email. Photos connects to bundled Immich with shared Ovela sign-in. Files opens the bundled workspace. Media and Notes have no destination until configured. Photos grants are checked when signing into Immich; existing Immich sessions remain valid until they expire or are revoked in Immich. For unrelated applications, grants control launcher visibility only.
 
 ## Screenshots
 
-Captured from a running self-hosted installation. Photos is connected to Immich; the other tiles are ready to configure.
+Captured from a running self-hosted installation. Photos is connected to Immich; Files opens the bundled workspace.
 
 <table>
   <tr>
@@ -95,3 +95,13 @@ The prototype originally had a standalone hosted visual demo. Ovela's current im
 ## License
 
 Ovela is [MIT licensed](LICENSE). Bundled services retain their own licenses; Immich and the Ovela Photos web overrides are AGPLv3; see [Ovela Photos](immich/README.md) for source and build details.
+
+## Files
+
+Shareable links work without an Ovela account. The owner chooses view/download or editing access, optional password protection, and an expiry. Links can be revoked from the Share dialog. Editing links support existing text and office documents; they do not allow uploads, deletion, moving, or permission changes.
+
+Open Files from the home page. Each person has a private file root and can share files or folders with other Files users as viewers or editors. The workspace includes uploads, folders, rename/move, trash with Undo, media/PDF previews, a CodeMirror code editor, Markdown live preview, and embedded Collabora office editing. The folder sidebar supports resizing, dragging closed, a toggle button, and Cmd/Ctrl+B outside text editors.
+
+`./ovela up` starts the complete local package. Office uses port 9980 by default; see [Office setup](docs/files-office.md) for remote domains and the home-mode limits. File bytes and saved revisions persist in `files_data`; metadata, sharing, and sessions are in the Convex volume. Back up **both volumes together** along with `.env.selfhost`.
+
+Current limits: uploads are capped at 100 MiB and are not resumable; text editing is capped at 2 MiB. Videos use native browser playback, with no transcoding. Saved revisions are retained, but a version-restore UI, trash browser, and orphan-blob cleanup are not included yet. Immich library browsing inside Files is deferred.
