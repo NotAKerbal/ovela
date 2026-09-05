@@ -19,8 +19,14 @@ export function SignIn({ joining = false }: { joining?: boolean }) {
   async function submit(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError('');
     try {
-      const result = creating ? await authClient.signUp.email({ email: email.trim().toLowerCase(), name: name.trim(), password, fetchOptions: { headers: { 'x-ovela-invite': enrollmentToken(token) } } }) : await authClient.signIn.email({ email: email.trim().toLowerCase(), password });
-      if (result.error) setError(setup?.needsSetup && result.error.message === 'This invitation is invalid or expired.' ? 'This setup key is not valid. Run ./ovela setup and open the printed link, or paste it here.' : result.error.message ?? 'Could not sign in.'); else router.replace('/');
+      let retryAfter = 60;
+      const onError = ({ response }: { response: Response }) => {
+        const seconds = Number(response.headers.get('X-Retry-After') ?? response.headers.get('Retry-After'));
+        if (Number.isFinite(seconds) && seconds > 0) retryAfter = Math.ceil(seconds);
+      };
+      const result = creating ? await authClient.signUp.email({ email: email.trim().toLowerCase(), name: name.trim(), password, fetchOptions: { headers: { 'x-ovela-invite': enrollmentToken(token) }, onError } }) : await authClient.signIn.email({ email: email.trim().toLowerCase(), password, fetchOptions: { onError } });
+      if (result.error?.status === 429) setError(`Too many attempts. Wait ${retryAfter} seconds, then try again. Your entries are still here.`);
+      else if (result.error) setError(setup?.needsSetup && result.error.message === 'This invitation is invalid or expired.' ? 'This setup key is not valid. Run ./ovela setup and open the printed link, or paste it here.' : result.error.message ?? 'Could not sign in.'); else router.replace('/');
     } catch { setError('Could not reach Ovela. Please try again.'); } finally { setBusy(false); }
   }
   return <><SiteHeader /><main className="auth-main"><form className="auth-form" onSubmit={submit}><h1>{setup?.needsSetup ? 'Make yourself at home.' : joining ? 'Join Ovela' : 'Sign in'}</h1><p>{setup?.needsSetup ? 'Create the first administrator account.' : joining ? 'Your invitation opens the door.' : 'Your home, just a moment away.'}</p>
