@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { Image, Folder, Play, AlignLeft, ArrowUpRight, RotateCcw, X } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { apps, type HavenApp } from '@/lib/apps';
+import { type HavenApp } from '@/lib/apps';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { SiteHeader } from './site-header';
 
 const icons = { photos: Image, files: Folder, media: Play, notes: AlignLeft };
 type Paint = { x: number; y: number; size: number; key: number };
@@ -12,7 +15,7 @@ function AppTile({ app, index, onOpen }: { app: HavenApp; index: number; onOpen:
   const [paint, setPaint] = useState<Paint | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const button = useRef<HTMLButtonElement>(null);
-  const Icon = icons[app.id as keyof typeof icons] ?? Folder;
+  const Icon = icons[(app.icon ?? app.id) as keyof typeof icons] ?? Folder;
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
 
   function activate(event: MouseEvent<HTMLButtonElement>) {
@@ -35,7 +38,7 @@ function AppTile({ app, index, onOpen }: { app: HavenApp; index: number; onOpen:
       aria-label={`Open ${app.name}`} style={{ '--tint': app.color, '--ink': app.ink } as CSSProperties}>
       <span className="glass-face" aria-hidden="true" />
       <span className="initial-wash" aria-hidden="true" />
-      <span className="tile-art" aria-hidden="true"><Icon strokeWidth={1.1} className={`sculpted-icon icon-${app.id}`} /></span>
+      <span className="tile-art" aria-hidden="true"><Icon strokeWidth={1.1} className={`sculpted-icon icon-${app.icon ?? app.id}`} /></span>
       <span className="tile-caption"><span className="app-name">{app.name}</span><ArrowUpRight className="open-arrow" size={20} aria-hidden="true" /></span>
       {paint && <span className="paint-origin" aria-hidden="true" style={{ left: paint.x, top: paint.y }}>
         <span key={paint.key} className="paint-bloom" style={{ width: paint.size, height: paint.size }} />
@@ -47,10 +50,12 @@ function AppTile({ app, index, onOpen }: { app: HavenApp; index: number; onOpen:
 }
 
 export function Haven() {
+  const available = useQuery(api.management.home);
+  const apps = available?.map(app => ({ ...app, id: app._id, href: app.url || undefined }));
   const [entrance, setEntrance] = useState(0);
   const [selected, setSelected] = useState<HavenApp | null>(null);
   const lastApp = useRef<string | null>(null);
-  const SelectedIcon = selected ? icons[selected.id as keyof typeof icons] ?? Folder : Folder;
+  const SelectedIcon = selected ? icons[(selected.icon ?? selected.id) as keyof typeof icons] ?? Folder : Folder;
 
   function openApp(app: HavenApp) {
     lastApp.current = app.name;
@@ -59,11 +64,8 @@ export function Haven() {
   }
 
   return <>
-    <header className="site-header">
-      <a className="brand" href="/" aria-label="Mosaic Haven home"><span className="brand-mark" aria-hidden="true"><i /><i /><i /><i /></span><span>Mosaic Haven</span></a>
-      <div className="header-actions"><button className="replay" onClick={() => setEntrance(n => n + 1)} aria-label="Replay entrance animation"><RotateCcw size={16} /><span>Replay</span></button><span className="user-name">Isaac</span></div>
-    </header>
-    <main className="home"><h1 className="sr-only">Your applications</h1><ul key={entrance} className="app-grid" aria-label="Applications">{apps.map((app, index) => <AppTile key={app.id} app={app} index={index} onOpen={openApp} />)}</ul></main>
+    <SiteHeader action={<button className="replay" onClick={() => setEntrance(n => n + 1)} aria-label="Replay entrance animation"><RotateCcw size={16} /><span>Replay</span></button>} />
+    <main className="home"><h1 className="sr-only">Your applications</h1>{apps === undefined ? <div className="app-grid" aria-busy="true" aria-label="Loading applications">{[0,1,2,3].map(i => <div className="skeleton skeleton-tile" key={i} />)}</div> : apps.length === 0 ? <div className="empty-state"><h2>No applications yet</h2><p>Your applications will appear here when an administrator adds access.</p></div> : <ul key={entrance} className="app-grid" aria-label="Applications">{apps.map((app, index) => <AppTile key={app.id} app={app} index={index} onOpen={openApp} />)}</ul>}</main>
     <Dialog.Root open={!!selected} onOpenChange={open => { if (!open) setSelected(null); }}>
       <Dialog.Portal><Dialog.Overlay className="dialog-overlay" /><Dialog.Content className="app-preview" style={{ '--tint': selected?.color, '--ink': selected?.ink } as CSSProperties}
         onCloseAutoFocus={event => { event.preventDefault(); document.querySelector<HTMLButtonElement>(`button[aria-label="Open ${lastApp.current}"]`)?.focus(); }}>

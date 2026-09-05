@@ -1,0 +1,62 @@
+name: ovela
+services:
+  backend:
+    image: ghcr.io/get-convex/convex-backend@sha256:1f2044e3eac463ac78973b136c0baf72d4ada602611d853d6f99f280e29e0a98
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 20s
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${CONVEX_PORT:-3210}:3210"
+      - "${BIND_ADDRESS:-127.0.0.1}:${CONVEX_SITE_PORT:-3211}:3211"
+    volumes:
+      - convex_data:/convex/data
+    environment:
+      CONVEX_CLOUD_ORIGIN: ${NEXT_PUBLIC_CONVEX_URL:-http://127.0.0.1:3210}
+      CONVEX_SITE_ORIGIN: ${NEXT_PUBLIC_CONVEX_SITE_URL:-http://127.0.0.1:3211}
+      DISABLE_BEACON: "true"
+      DISABLE_METRICS_ENDPOINT: "true"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3210/version"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+  tools:
+    profiles: [setup]
+    build:
+      context: .
+      target: tools
+    environment:
+      CONVEX_SELF_HOSTED_URL: http://backend:3210
+      CONVEX_SELF_HOSTED_ADMIN_KEY: ${CONVEX_SELF_HOSTED_ADMIN_KEY:-}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-}
+      SITE_URL: ${SITE_URL:-http://127.0.0.1:3000}
+      OVELA_SETUP_TOKEN: ${OVELA_SETUP_TOKEN:-}
+    command: ["sh", "scripts/selfhost-deploy.sh"]
+  app:
+    build:
+      context: .
+      target: app
+      args:
+        NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-http://127.0.0.1:3210}
+        NEXT_PUBLIC_CONVEX_SITE_URL: ${NEXT_PUBLIC_CONVEX_SITE_URL:-http://127.0.0.1:3211}
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${APP_PORT:-3000}:3000"
+    environment:
+      NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-http://127.0.0.1:3210}
+      NEXT_PUBLIC_CONVEX_SITE_URL: ${NEXT_PUBLIC_CONVEX_SITE_URL:-http://127.0.0.1:3211}
+      CONVEX_INTERNAL_URL: http://backend:3210
+      CONVEX_INTERNAL_SITE_URL: http://backend:3211
+      SITE_URL: ${SITE_URL:-http://127.0.0.1:3000}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/sign-in').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      backend:
+        condition: service_healthy
+volumes:
+  convex_data:

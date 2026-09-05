@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-export const metadata: Metadata = { title: 'Mosaic Haven', description: 'A personal home for your applications.' };
+import { Providers } from '@/components/providers';
+export const metadata: Metadata = { title: 'Ovela', description: 'A personal home for your applications.' };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en"><body><Providers>{children}</Providers></body></html>;
 }

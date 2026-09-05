@@ -1,4 +1,4 @@
-export type HavenApp = { id: string; name: string; description: string; color: string; ink: string; href?: string };
+export type HavenApp = { id: string; icon?: string; name: string; description: string; color: string; ink: string; href?: string };
 
 // Add a destination URL when an application is ready to connect.
 export const apps: readonly HavenApp[] = [

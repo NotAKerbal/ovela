@@ -5,3 +5,5 @@ out/
 .env*
 !.env.example
 .DS_Store
+.convex/
+coverage/
