@@ -106,3 +106,6 @@ label { display: block; font-size: 15px; line-height: 1.5; margin-bottom: 18px; 
 .mosaic-button:active { transform: translateY(1px); }
 @media (max-width: 420px) { .account-actions { flex-direction: column; }.mosaic-button { width: 100%; } }
 .profile-photo-actions input[hidden] { display: none; }
+
+.initial-avatar { border-radius: 6px; overflow: hidden; }
+.initial-avatar img { width: 100%; height: 100%; object-fit: cover; }

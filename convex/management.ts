@@ -29,7 +29,7 @@ export const directory = query({ args: {}, handler: async ctx => {
   const people = await ctx.db.query('people').collect();
   const applications = await ctx.db.query('applications').collect();
   const invitations = (await ctx.db.query('invitations').collect()).filter(i => !i.consumed && !i.revoked).map(({ tokenHash: _secret, ...invite }) => invite);
-  return { people, applications, invitations };
+  return { people: await Promise.all(people.map(async person => ({ ...person, photoUrl: person.photoId ? await ctx.storage.getUrl(person.photoId) : null }))), applications, invitations };
 } });
 async function validateAppIds(ctx: MutationCtx, ids: Id<'applications'>[]) {
   const distinct = [...new Set(ids)];
