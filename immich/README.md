@@ -46,7 +46,8 @@ overrides and deployment files: <https://github.com/NotAKerbal/ovela>.
 
 The header opens Ovela's `/account`, and legacy `/user-settings` links redirect
 there. Photo preferences, devices, API keys, and locked-folder PIN controls live
-at `/preferences` under More. Photos has one header; Ovela management remains
+at `/preferences` through Settings in the sidebar. On mobile, open More to
+show the sidebar. Administrators can open Administration from that page. Photos has one header; Ovela management remains
 available from the hub.
 
 The web client refreshes the signed-in Ovela name and picture on entry and when

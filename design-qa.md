@@ -68,3 +68,19 @@ same-site hostnames. Native Immich clients retain upstream synchronization
 behavior. OAuth supplies a picture for the initial Immich avatar import; native
 continuous avatar synchronization was not added. Immich modifications remain
 AGPL, with complete corresponding source downloadable from the sidebar.
+
+## Main-app dark mode and settings follow-up
+
+Added System/Light/Dark appearance controls with browser persistence and a
+pre-paint theme initializer. The default follows the device. Checked explicit
+Light/Dark switching, persistence after navigation/reload, the dark home and
+management pages, and the settled password dialog. The account page now uses
+profile/security and appearance columns above 850px and stacks below that width.
+Verified the desktop two-column layout. An earlier mobile home check at 390px
+had no horizontal overflow; the final account mobile viewport override did not
+target the intended tab, so its breakpoint was reviewed in CSS instead.
+
+Immich has a visible Settings sidebar link and an administrator-only
+Administration link in photo preferences. Clicked both through to System
+Settings successfully. Ovela type checking and production builds pass; Immich
+TypeScript/Svelte checks pass with zero errors/warnings. All services are healthy.

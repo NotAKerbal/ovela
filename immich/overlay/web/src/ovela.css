@@ -113,3 +113,6 @@ body { background: var(--ovela-paper); color: var(--ovela-ink); }
 .ovela-topbar { gap:32px; }
 .ovela-topbar > .ovela-desktop-search { width:min(440px,40vw); margin-inline:auto; }
 @media(max-width:849px) { .ovela-topbar { gap:12px; padding:0 16px; } .ovela-header-actions { gap:8px; } .ovela-upload span { display:none; } .ovela-upload { padding:10px; } }
+
+.ovela-settings-admin { margin-bottom:24px; }
+.ovela-settings-admin a { text-decoration:underline; text-underline-offset:4px; color:var(--ovela-sage); }

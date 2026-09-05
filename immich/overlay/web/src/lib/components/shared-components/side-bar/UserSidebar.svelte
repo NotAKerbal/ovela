@@ -8,6 +8,7 @@
   import { recentAlbumsDropdown } from '$lib/stores/preferences.store';
   import { NavbarGroup, NavbarItem } from '@immich/ui';
   import {
+    mdiCogOutline,
     mdiAccount,
     mdiAccountMultiple,
     mdiAccountMultipleOutline,
@@ -57,9 +58,9 @@
   <div class="ovela-sidebar-spacer"></div>
   <NavbarItem title={$t('archive')} href={Route.archive()} icon={mdiArchiveArrowDownOutline} activeIcon={mdiArchiveArrowDown} />
   {#if featureFlagsManager.value.trash}<NavbarItem title={$t('trash')} href={Route.trash()} icon={mdiTrashCanOutline} activeIcon={mdiTrashCan} />{/if}
+  <NavbarItem title="Settings" href="/preferences" icon={mdiCogOutline} />
   <details class="ovela-more-routes">
     <summary>More</summary>
-    <NavbarItem title="Photo preferences" href="/preferences" icon={mdiToolboxOutline} />
     {#if authManager.user.isAdmin}<NavbarItem title="Photo administration" href={Route.systemSettings()} icon={mdiToolboxOutline} />{/if}
   {#if featureFlagsManager.value.search}
     <NavbarItem title={$t('explore')} href={Route.explore()} icon={mdiMagnify} />
