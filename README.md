@@ -1,8 +1,21 @@
-# Ovela
+<h1 align="center">Ovela</h1>
 
-A self-hosted home for independent applications, built with Next.js, Convex, and Better Auth. Warm stone surfaces, glass app tiles, and short watercolor transitions give the home and its management tools a shared identity.
+<p align="center">A self-hosted home for your apps.</p>
 
-## Start
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#screenshots">Screenshots</a> ·
+  <a href="docs/self-hosting.md">Self-hosting guide</a> ·
+  <a href="LICENSE">MIT license</a>
+</p>
+
+![Ovela home with glass tiles for Photos, Files, Media, and Notes](docs/screenshots/home.png)
+
+Ovela brings your applications into one home, with a shared sign-in for the bundled Immich photo library. Invite people, choose which apps appear in their home, and manage your catalog without a rebuild. Run the stack on your own hardware with Docker Compose. No hosted service accounts are required.
+
+Warm stone surfaces, glass tiles, and short watercolor transitions carry through the home and management screens. Built with Next.js, Convex, and Better Auth.
+
+## Quick start
 
 Requires Docker with Compose v2.20+ and OpenSSL. Allow at least 8 GB RAM for the combined Ovela and Immich stack. No hosted service accounts are required.
 
@@ -17,7 +30,7 @@ Open the private setup link printed by the second command and create your first 
 
 The stack runs Next.js, the Convex backend, and Immich in Docker. Photos opens the bundled Immich library with Ovela sign-in; see [Immich setup and storage](docs/immich.md). Better Auth runs inside Convex. Database and file data persist in a Docker volume; secrets remain in the ignored, owner-readable `.env.selfhost` file. See [self-hosting](docs/self-hosting.md) for domain configuration, backups, upgrades, and alternate ports.
 
-## What works
+## Features
 
 - First-administrator setup with a private setup key.
 - Email/password sign-in, password changes, and local profile photos.
@@ -29,6 +42,23 @@ The stack runs Next.js, the Convex backend, and Immich in Docker. Photos opens t
 - Keyboard access, responsive layouts, loading skeletons, and reduced-motion support.
 
 Invitations are copied and shared manually; Ovela does not send email. Photos connects to bundled Immich with shared Ovela sign-in. Files, Media, and Notes have no destination until configured. Photos grants are checked when signing into Immich; existing Immich sessions remain valid until they expire or are revoked in Immich. For unrelated applications, grants control launcher visibility only.
+
+## Screenshots
+
+Captured from a running self-hosted installation. Photos is connected to Immich; the other tiles are ready to configure.
+
+<table>
+  <tr>
+    <th>Application management</th>
+    <th>Mobile home</th>
+  </tr>
+  <tr>
+    <td width="76%" valign="top"><a href="docs/screenshots/applications.png"><img src="docs/screenshots/applications.png" alt="Application catalog showing descriptions, connection addresses, and the number of people with access" width="100%"></a></td>
+    <td width="24%" valign="top"><a href="docs/screenshots/home-mobile.png"><img src="docs/screenshots/home-mobile.png" alt="Ovela home on a phone, with the four application tiles in a two-column layout" width="100%"></a></td>
+  </tr>
+</table>
+
+Open a screenshot to view it at full size. See the [capture notes](docs/screenshots/README.md) to refresh these images.
 
 ## Develop
 
