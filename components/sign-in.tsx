@@ -12,7 +12,7 @@ export function SignIn({ joining = false }: { joining?: boolean }) {
   const setup = useQuery(api.management.setupStatus);
   const [token, setToken] = useState(''), [name, setName] = useState(''), [email, setEmail] = useState(''), [password, setPassword] = useState(''), [error, setError] = useState(''), [busy, setBusy] = useState(false);
   useEffect(() => { const value = window.location.hash.slice(1); if (value) { setToken(enrollmentToken(window.location.href)); history.replaceState(null, '', location.pathname); } }, []);
-  useEffect(() => { if (isAuthenticated) router.replace('/'); }, [isAuthenticated, router]);
+  useEffect(() => { if (isAuthenticated && !new URLSearchParams(window.location.search).has('client_id')) router.replace('/'); }, [isAuthenticated, router]);
   const invitation = useQuery(api.management.invitationInfo, joining && token ? { token } : 'skip');
   useEffect(() => { if (invitation) { setEmail(invitation.email); setName(invitation.name); } }, [invitation]);
   const creating = setup?.needsSetup || joining;
@@ -26,7 +26,7 @@ export function SignIn({ joining = false }: { joining?: boolean }) {
       };
       const result = creating ? await authClient.signUp.email({ email: email.trim().toLowerCase(), name: name.trim(), password, fetchOptions: { headers: { 'x-ovela-invite': enrollmentToken(token) }, onError } }) : await authClient.signIn.email({ email: email.trim().toLowerCase(), password, fetchOptions: { onError } });
       if (result.error?.status === 429) setError(`Too many attempts. Wait ${retryAfter} seconds, then try again. Your entries are still here.`);
-      else if (result.error) setError(setup?.needsSetup && result.error.message === 'This invitation is invalid or expired.' ? 'This setup key is not valid. Run ./ovela setup and open the printed link, or paste it here.' : result.error.message ?? 'Could not sign in.'); else router.replace('/');
+      else if (result.error) setError(setup?.needsSetup && result.error.message === 'This invitation is invalid or expired.' ? 'This setup key is not valid. Run ./ovela setup and open the printed link, or paste it here.' : result.error.message ?? 'Could not sign in.'); else if (!new URLSearchParams(window.location.search).has('client_id')) router.replace('/');
     } catch { setError('Could not reach Ovela. Please try again.'); } finally { setBusy(false); }
   }
   return <><SiteHeader /><main className="auth-main page-wash-in"><form className="auth-form" onSubmit={submit}><h1>{setup?.needsSetup ? 'Make yourself at home.' : joining ? 'Join Ovela' : 'Sign in'}</h1><p>{setup?.needsSetup ? 'Create the first administrator account.' : joining ? 'Your invitation opens the door.' : 'Your home, just a moment away.'}</p>

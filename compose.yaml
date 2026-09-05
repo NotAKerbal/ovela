@@ -42,15 +42,16 @@ services:
         NEXT_PUBLIC_CONVEX_SITE_URL: ${NEXT_PUBLIC_CONVEX_SITE_URL:-http://127.0.0.1:3211}
     restart: unless-stopped
     ports:
-      - "${BIND_ADDRESS:-127.0.0.1}:${APP_PORT:-3000}:3000"
+      - "${BIND_ADDRESS:-127.0.0.1}:${APP_PORT:-3000}:${APP_PORT:-3000}"
     environment:
+      PORT: ${APP_PORT:-3000}
       NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-http://127.0.0.1:3210}
       NEXT_PUBLIC_CONVEX_SITE_URL: ${NEXT_PUBLIC_CONVEX_SITE_URL:-http://127.0.0.1:3211}
       CONVEX_INTERNAL_URL: http://backend:3210
       CONVEX_INTERNAL_SITE_URL: http://backend:3211
       SITE_URL: ${SITE_URL:-http://127.0.0.1:3000}
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/sign-in').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:' + process.env.PORT + '/sign-in').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 5s
       timeout: 5s
       retries: 20

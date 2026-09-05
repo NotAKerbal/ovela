@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@better-auth/oauth-provider": "1.6.30",
     "@convex-dev/better-auth": "^0.12.5",
     "@noble/hashes": "^2.4.0",
     "@radix-ui/react-dialog": "^1.1.23",
@@ -31,5 +32,6 @@
     "convex-test": "^0.0.56",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"
-  }
+  },
+  "license": "MIT"
 }

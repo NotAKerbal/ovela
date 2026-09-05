@@ -12,7 +12,9 @@ import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as management from "../management.js";
 import type * as profile from "../profile.js";
+import type * as providers from "../providers.js";
 import type * as security from "../security.js";
+import type * as sso from "../sso.js";
 import type * as token from "../token.js";
 
 import type {
@@ -26,7 +28,9 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   management: typeof management;
   profile: typeof profile;
+  providers: typeof providers;
   security: typeof security;
+  sso: typeof sso;
   token: typeof token;
 }>;
 

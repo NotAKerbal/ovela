@@ -1,9 +1,11 @@
 import { createClient, type AuthFunctions, type GenericCtx } from '@convex-dev/better-auth';
 import { convex } from '@convex-dev/better-auth/plugins';
 import { betterAuth, type BetterAuthOptions } from 'better-auth/minimal';
+import { oauthProvider } from '@better-auth/oauth-provider';
+import { jwt } from 'better-auth/plugins/jwt';
 import { createAuthMiddleware, APIError } from 'better-auth/api';
 import { components, internal } from './_generated/api';
-import type { DataModel } from './_generated/dataModel';
+import type { Doc, DataModel } from './_generated/dataModel';
 import authConfig from './auth.config';
 import authSchema from './betterAuth/schema';
 import { hashToken } from './token';
@@ -35,7 +37,11 @@ export const authComponent = createClient<DataModel, typeof authSchema>(componen
         { name: 'Media', description: 'Something good to watch.', icon: 'media' as const, color: '#aebfc6', ink: '#456575' },
         { name: 'Notes', description: 'Room for your ideas.', icon: 'notes' as const, color: '#d4b7a7', ink: '#875e4a' },
       ];
-      for (const app of defaults) await ctx.db.insert('applications', { ...app, url: '' });
+      const bundledPhotos = (await ctx.db.query('applications').collect()).some(app => app.provider === 'immich');
+      for (const app of defaults) {
+        if (app.icon === 'photos' && bundledPhotos) continue;
+        await ctx.db.insert('applications', { ...app, url: '' });
+      }
     }
     await ctx.db.insert('people', { authId: user._id, name: user.name, email, role: existing ? invitation!.role : 'admin', suspended: false, appIds: invitation?.appIds ?? [] });
     if (invitation) await ctx.db.patch(invitation._id, { consumed: true });
@@ -64,6 +70,11 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => ({
     '/sign-up/email': { window: 60, max: 5 },
   } },
   hooks: { before: createAuthMiddleware(async request => {
+    // This package only issues identity tokens for Immich. Reject resource
+    // indicators while OAuth Provider 1.6 has GHSA-p2fr-6hmx-4528.
+    if (request.path?.startsWith('/oauth2/') && (
+      request.body?.resource !== undefined || new URL(request.request?.url ?? 'http://localhost').searchParams.has('resource')
+    )) throw new APIError('BAD_REQUEST', { error: 'invalid_target', error_description: 'Resource indicators are not supported.' });
     if (request.path === '/sign-up/email') {
       const allowed: boolean = await ctx.runQuery(internal.management.canRegister, { email: String(request.body?.email ?? ''), token: request.headers?.get('x-ovela-invite') ?? '' });
       if (!allowed) throw new APIError('FORBIDDEN', { message: 'This invitation is invalid or expired.' });
@@ -71,6 +82,56 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => ({
   }) },
   // Identity and sessionId are supplied by the plugin. Keep enrollment proof
   // and other persisted user fields out of client-readable JWT claims.
-  plugins: [convex({ authConfig, jwt: { definePayload: () => ({}) } })],
+  plugins: [convexSessionPlugin(), jwt({
+    jwt: { issuer: `${process.env.SITE_URL}/api/auth`, definePayload: () => ({}) },
+    jwks: { keyPairConfig: { alg: 'RS256' } },
+    adapter: {
+      getJwks: async () => {
+        const keys: Doc<'oidcKeys'>[] = await ctx.runQuery(internal.sso.oidcKeys, {});
+        return keys.map(oidcKey);
+      },
+      createJwk: async key => {
+        if (!('runMutation' in ctx)) throw new Error('Key creation requires a mutation context.');
+        const record: Doc<'oidcKeys'> = await ctx.runMutation(internal.sso.createOidcKey, {
+          publicKey: key.publicKey, privateKey: key.privateKey,
+          ...(key.expiresAt ? { expiresAt: key.expiresAt.getTime() } : {}),
+        });
+        return oidcKey(record);
+      },
+    },
+  }), oauthProvider({
+    loginPage: '/sign-in', consentPage: '/sign-in', scopes: ['openid', 'email', 'profile'],
+    grantTypes: ['authorization_code'], validAudiences: [`${process.env.SITE_URL}/api/auth`], allowDynamicClientRegistration: false,
+    clientPrivileges: async () => false,
+    storeClientSecret: { hash: hashToken },
+    postLogin: {
+      page: '/sign-in', consentReferenceId: async ({ user }) => { await assertPhotosAccess(ctx, user.id); return undefined; },
+      shouldRedirect: async ({ user }) => { await assertPhotosAccess(ctx, user.id); return false; },
+    },
+    customIdTokenClaims: async ({ user }) => photosClaims(ctx, user.id),
+    customUserInfoClaims: async ({ user }) => photosClaims(ctx, user.id),
+  })],
 } satisfies BetterAuthOptions);
 export const createAuth = (ctx: GenericCtx<DataModel>) => betterAuth(createAuthOptions(ctx));
+
+async function assertPhotosAccess(ctx: GenericCtx<DataModel>, authId: string) {
+  const allowed: boolean = await ctx.runQuery(internal.sso.canAccessPhotos, { authId });
+  if (!allowed) throw new APIError('FORBIDDEN', { message: 'You do not have access to Photos.' });
+}
+async function photosClaims(ctx: GenericCtx<DataModel>, authId: string) {
+  await assertPhotosAccess(ctx, authId);
+  const role: string = await ctx.runQuery(internal.sso.photosRole, { authId });
+  return { immich_role: role };
+}
+
+function oidcKey(key: Doc<'oidcKeys'>) {
+  return { id: key._id, publicKey: key.publicKey, privateKey: key.privateKey, createdAt: new Date(key.createdAt), ...(key.expiresAt ? { expiresAt: new Date(key.expiresAt) } : {}) };
+}
+
+// Better Auth merges endpoints by key. Keep Convex's existing HTTP paths while
+// separating its token/JWKS handlers from the OAuth provider's JWT plugin.
+function convexSessionPlugin() {
+  const plugin = convex({ authConfig, jwt: { definePayload: () => ({}) } });
+  const { getToken, getJwks, ...endpoints } = plugin.endpoints;
+  return { ...plugin, endpoints: { ...endpoints, getConvexToken: getToken, getConvexJwks: getJwks } };
+}

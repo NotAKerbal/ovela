@@ -4,18 +4,26 @@ cd "$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 command -v docker >/dev/null 2>&1 || { echo 'Install Docker with Docker Compose first.' >&2; exit 1; }
 docker compose version >/dev/null
 config=.env.selfhost
-compose() { docker compose --env-file "$config" "$@"; }
+compose() { docker compose --env-file "$config" -f compose.yaml -f compose.immich.yaml "$@"; }
 case "${1:-up}" in
   up)
     command -v openssl >/dev/null 2>&1 || { echo 'Install openssl first.' >&2; exit 1; }
     umask 077
     if [ ! -f "$config" ]; then cp .env.example "$config"; fi
     chmod 600 "$config"
-    for key in BETTER_AUTH_SECRET OVELA_SETUP_TOKEN; do
+    for key in BETTER_AUTH_SECRET OVELA_SETUP_TOKEN IMMICH_DB_PASSWORD OVELA_IMMICH_CLIENT_SECRET; do
       if ! grep -q "^${key}=." "$config"; then
         printf '\n%s=%s\n' "$key" "$(openssl rand -hex 32)" >> "$config"
       fi
     done
+    if ! grep -q '^IMMICH_URL=.' "$config"; then
+      site=$(sed -n 's/^SITE_URL=//p' "$config" | tail -1)
+      immich_port=$(sed -n 's/^IMMICH_PORT=//p' "$config" | tail -1)
+      case "$site" in
+        http://127.0.0.1:*|http://localhost:*) printf '\nIMMICH_URL=http://127.0.0.1:%s\n' "${immich_port:-2283}" >> "$config" ;;
+        *) echo 'Set IMMICH_URL in .env.selfhost to the public Immich origin, then run ./ovela up.' >&2; exit 1 ;;
+      esac
+    fi
     compose up -d --wait backend
     if ! grep -q '^CONVEX_SELF_HOSTED_ADMIN_KEY=.' "$config"; then
       admin_key=$(compose exec -T backend ./generate_admin_key.sh)
@@ -25,8 +33,9 @@ case "${1:-up}" in
     fi
     compose build tools
     compose run --rm -T tools
+    compose run --rm -T tools node scripts/immich-config.mjs
     compose build app
-    compose up -d --wait app
+    compose up -d --wait --wait-timeout 600
     echo 'Ovela is running. Use ./ovela setup to show your private first-admin link.'
     ;;
   setup)

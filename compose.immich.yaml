@@ -1,0 +1,83 @@
+# Adapted from the official Immich v3.1.0 release compose file.
+# https://github.com/immich-app/immich/releases/tag/v3.1.0
+services:
+  app:
+    ports:
+      - "${IMMICH_BIND_ADDRESS:-127.0.0.1}:${IMMICH_PORT:-2283}:2283"
+  tools:
+    environment:
+      OVELA_IMMICH_CLIENT_SECRET: ${OVELA_IMMICH_CLIENT_SECRET:?Run ./ovela up to generate the Immich client secret}
+      IMMICH_URL: ${IMMICH_URL:?Set IMMICH_URL in .env.selfhost}
+    volumes:
+      - immich_config:/config
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:v3.1.0
+    restart: unless-stopped
+    # Both services must reach the same localhost OIDC issuer during local setup.
+    network_mode: service:app
+    environment:
+      DB_HOSTNAME: immich-database
+      DB_USERNAME: immich
+      DB_DATABASE_NAME: immich
+      DB_PASSWORD: ${IMMICH_DB_PASSWORD:?Run ./ovela up to generate the Immich database password}
+      REDIS_HOSTNAME: immich-redis
+      IMMICH_CONFIG_FILE: /config/immich.json
+      IMMICH_ALLOW_SETUP: "false"
+    volumes:
+      - immich_library:/data
+      - immich_config:/config:ro
+    depends_on:
+      app:
+        condition: service_healthy
+        restart: true
+      immich-database:
+        condition: service_healthy
+      immich-redis:
+        condition: service_healthy
+    healthcheck:
+      disable: false
+      interval: 15s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:v3.1.0
+    restart: unless-stopped
+    volumes:
+      - immich_model_cache:/cache
+    healthcheck:
+      disable: false
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+  immich-redis:
+    image: docker.io/valkey/valkey:9@sha256:8e8d64b405ce18f41b8e5ee20aa4687a8ed0022d1298f2ce31cdcf3a76e09411
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  immich-database:
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${IMMICH_DB_PASSWORD:?Run ./ovela up to generate the Immich database password}
+      POSTGRES_USER: immich
+      POSTGRES_DB: immich
+      POSTGRES_INITDB_ARGS: --data-checksums
+    volumes:
+      - immich_postgres:/var/lib/postgresql/data
+    shm_size: 128mb
+    healthcheck:
+      disable: false
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+volumes:
+  immich_library:
+  immich_postgres:
+  immich_model_cache:
+  immich_config:

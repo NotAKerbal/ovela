@@ -36,4 +36,26 @@ export default defineSchema({
   rateLimit: defineTable({
     key: v.string(), count: v.number(), lastRequest: v.number(),
   }).index('key', ['key']),
+  oauthClient: defineTable({
+    clientId: v.string(), clientSecret: optionalString, disabled: v.optional(v.boolean()),
+    skipConsent: v.optional(v.boolean()), enableEndSession: v.optional(v.boolean()), subjectType: optionalString,
+    scopes: v.optional(v.array(v.string())), userId: optionalString, createdAt: optionalNumber, updatedAt: optionalNumber,
+    name: optionalString, uri: optionalString, icon: optionalString, contacts: v.optional(v.array(v.string())),
+    tos: optionalString, policy: optionalString, softwareId: optionalString, softwareVersion: optionalString,
+    softwareStatement: optionalString, redirectUris: v.array(v.string()), postLogoutRedirectUris: v.optional(v.array(v.string())),
+    tokenEndpointAuthMethod: optionalString, grantTypes: v.optional(v.array(v.string())), responseTypes: v.optional(v.array(v.string())),
+    public: v.optional(v.boolean()), type: optionalString, requirePKCE: v.optional(v.boolean()), referenceId: optionalString, metadata: optionalString,
+  }).index('clientId', ['clientId']).index('userId', ['userId']),
+  oauthRefreshToken: defineTable({
+    token: v.string(), clientId: v.string(), sessionId: optionalString, userId: v.string(), referenceId: optionalString,
+    expiresAt: v.number(), createdAt: v.number(), revoked: optionalNumber, authTime: optionalNumber, scopes: v.array(v.string()),
+  }).index('token', ['token']).index('clientId', ['clientId']).index('sessionId', ['sessionId']).index('userId', ['userId']),
+  oauthAccessToken: defineTable({
+    token: v.string(), clientId: v.string(), sessionId: optionalString, userId: optionalString, referenceId: optionalString,
+    refreshId: optionalString, expiresAt: v.number(), createdAt: v.number(), scopes: v.array(v.string()),
+  }).index('token', ['token']).index('clientId', ['clientId']).index('sessionId', ['sessionId']).index('userId', ['userId']).index('refreshId', ['refreshId']),
+  oauthConsent: defineTable({
+    clientId: v.string(), userId: optionalString, referenceId: optionalString, scopes: v.array(v.string()), createdAt: v.number(), updatedAt: v.number(),
+  }).index('clientId', ['clientId']).index('userId', ['userId']),
+
 });
