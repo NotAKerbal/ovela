@@ -37,7 +37,7 @@ describe('Photos single sign-on', () => {
     await t.mutation(internal.sso.configureImmich, {});
     const get = () => t.action(ctx => authComponent.adapter(ctx)(createAuthOptions(ctx)).findOne<Record<string, unknown>>({ model: 'oauthClient', where: [{ field: 'clientId', value: 'immich' }] }));
     const first = await get();
-    expect(first).toMatchObject({ clientId: 'immich', public: false, skipConsent: true, requirePKCE: true, redirectUris: ['http://127.0.0.1:2283/auth/login', 'http://127.0.0.1:2283/user-settings'] });
+    expect(first).toMatchObject({ clientId: 'immich', public: false, skipConsent: true, requirePKCE: true, redirectUris: ['http://127.0.0.1:2283/auth/login', 'http://127.0.0.1:2283/user-settings', 'http://127.0.0.1:2283/api/oauth/mobile-redirect'] });
     expect(first?.clientSecret).not.toBe('test-secret-a');
     vi.stubEnv('OVELA_IMMICH_CLIENT_SECRET', 'test-secret-b');
     await t.mutation(internal.sso.configureImmich, {});
@@ -47,7 +47,8 @@ describe('Photos single sign-on', () => {
   });
 });
 
-it('completes the OIDC code exchange and denies a suspended account at the real endpoints', async () => {
+it.each(['/auth/login', '/api/oauth/mobile-redirect'])('completes OIDC through %s and denies suspended accounts', async callback => {
+  const redirectUri = `http://127.0.0.1:2283${callback}`;
   vi.stubEnv('SITE_URL', 'http://127.0.0.1:3000');
   vi.stubEnv('CONVEX_SITE_URL', 'http://127.0.0.1:3211');
   vi.stubEnv('BETTER_AUTH_SECRET', 'test-secret-only-at-least-thirty-two-characters');
@@ -73,7 +74,7 @@ it('completes the OIDC code exchange and denies a suspended account at the real 
   const verifier = 'a'.repeat(64);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)));
   const challenge = btoa(String.fromCharCode(...digest)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-  const params = new URLSearchParams({ client_id: 'immich', redirect_uri: 'http://127.0.0.1:2283/auth/login', response_type: 'code', scope: 'openid email profile', state: 'test-state', code_challenge: challenge, code_challenge_method: 'S256', nonce: 'test-nonce' });
+  const params = new URLSearchParams({ client_id: 'immich', redirect_uri: redirectUri, response_type: 'code', scope: 'openid email profile', state: 'test-state', code_challenge: challenge, code_challenge_method: 'S256', nonce: 'test-nonce' });
   const authorize = () => request(`/oauth2/authorize?${params}`, { headers: { cookie, accept: 'text/html' } });
   expect((await request(`/oauth2/authorize?${params}&resource=https://unrelated.example`, { headers: { cookie } })).status).toBe(400);
   expect((await request('/oauth2/token', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ grant_type: 'authorization_code', resource: 'https://unrelated.example' }) })).status).toBe(400);
@@ -81,9 +82,10 @@ it('completes the OIDC code exchange and denies a suspended account at the real 
   expect(authorization.status).toBe(302);
   const location = new URL(authorization.headers.get('location')!);
   expect(location.searchParams.get('error')).toBeNull();
+  expect(`${location.origin}${location.pathname}`).toBe(redirectUri);
   const code = location.searchParams.get('code');
   expect(code).toBeTruthy();
-  const token = await request('/oauth2/token', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ grant_type: 'authorization_code', code: code!, redirect_uri: 'http://127.0.0.1:2283/auth/login', code_verifier: verifier, client_id: 'immich', client_secret: 'test-confidential-immich-secret' }) });
+  const token = await request('/oauth2/token', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ grant_type: 'authorization_code', code: code!, redirect_uri: redirectUri, code_verifier: verifier, client_id: 'immich', client_secret: 'test-confidential-immich-secret' }) });
   const result = await token.json();
   expect(token.status, JSON.stringify(result)).toBe(200);
   const claims = JSON.parse(atob(result.id_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));

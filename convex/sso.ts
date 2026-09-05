@@ -26,7 +26,7 @@ export const configureImmich = internalMutation({
     const data = {
       clientId: 'immich', clientSecret: hashToken(secret), name: 'Ovela Photos', disabled: false,
       skipConsent: true, public: false, requirePKCE: true,
-      redirectUris: [`${origin}/auth/login`, `${origin}/user-settings`],
+      redirectUris: [`${origin}/auth/login`, `${origin}/user-settings`, `${origin}/api/oauth/mobile-redirect`],
       scopes: ['openid', 'email', 'profile'], grantTypes: ['authorization_code'], responseTypes: ['code'],
       tokenEndpointAuthMethod: 'client_secret_post', updatedAt: new Date(),
     };

@@ -22,13 +22,15 @@ SITE_URL=https://home.example.com
 NEXT_PUBLIC_CONVEX_URL=https://convex.example.com
 NEXT_PUBLIC_CONVEX_SITE_URL=https://convex-http.example.com
 IMMICH_URL=https://photos.example.com
+COLLABORA_URL=https://office.example.com
+COLLABORA_TLS_TERMINATION=true
 ```
 
-Point your reverse proxy at host ports 3000, 3210, 3211, and 2283 respectively. Enable WebSocket forwarding for the Convex endpoint. Use HTTPS for all public origins. The browser must be able to reach the public Convex URL; container-only names such as `backend` will not work there. No managed reverse proxy is required.
+Point your reverse proxy at host ports 3000, 3210, 3211, 2283, and 9980 respectively. Enable WebSocket forwarding for Convex, Immich, and Collabora. Forward all Collabora paths, including `/browser`, `/hosting`, and `/cool`. Use HTTPS for all public origins. The browser must be able to reach the public Convex URL; container-only names such as `backend` will not work there. No managed reverse proxy is required. Immich must also resolve and reach Ovela's public `SITE_URL` for sign-in. See [Office setup](files-office.md) for its iframe and proxy configuration.
 
 The default host bindings only accept local connections. If your reverse proxy runs on a different machine or needs published Docker host ports, set `BIND_ADDRESS` and `IMMICH_BIND_ADDRESS` to your host's LAN address. Keep the admin key private; the Convex endpoint serves both authenticated application traffic and administrative requests protected by that key.
 
-Port bindings are configurable using `APP_PORT`, `CONVEX_PORT`, `CONVEX_SITE_PORT`, and `IMMICH_PORT`. If you use direct LAN access, include the matching ports in all three public URLs. Rerun `./ovela up` after editing origins because Next.js compiles public variables into its browser bundle. Keep origins free of trailing slashes.
+Port bindings are configurable using `APP_PORT`, `CONVEX_PORT`, `CONVEX_SITE_PORT`, `IMMICH_PORT`, and `COLLABORA_PORT`. If you use direct LAN access, include the matching ports in all public URLs. Rerun `./ovela up` after editing origins because Next.js compiles public variables into its browser bundle. Keep origins free of trailing slashes.
 
 ## Everyday commands
 
@@ -43,7 +45,7 @@ The generated `.env.selfhost` holds your backend admin key, session secret, and 
 
 ## Backups and upgrades
 
-Back up `.env.selfhost`, the `convex_data` Docker volume, and [Immich's library and database](immich.md#storage). Stop the stack with `./ovela down` before taking a filesystem backup of the volume so the SQLite copy is consistent. Store backups outside this machine and verify that you can restore them. Never use `docker compose down -v` unless you intend to delete application data.
+Back up `.env.selfhost`, the `convex_data` and `files_data` Docker volumes together, and [Immich's library and database](immich.md#storage). Stop the stack with `./ovela down` before taking a filesystem backup of the volume so the SQLite copy is consistent. Store backups outside this machine and verify that you can restore them. Never use `docker compose down -v` unless you intend to delete application data.
 
 The backend image is pinned by digest. Before changing that digest or pulling application changes, take a backup and read upstream migration notes. Then run `./ovela up` to deploy functions and rebuild the frontend. Restoring an older application version may require restoring its matching database backup.
 

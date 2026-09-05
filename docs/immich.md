@@ -4,6 +4,12 @@ Ovela includes the official [Immich v3.1.0 release](https://github.com/immich-ap
 
 Run `./ovela up` to start the package. The launcher creates private database and OAuth client secrets, writes Immich's configuration into a Docker volume, and starts the services. Open Photos from Ovela after creating your Ovela administrator account. The default Immich address is `http://127.0.0.1:2283`.
 
+## Native mobile app
+
+Use the standard Immich app and enter your public `IMMICH_URL` as its server address. Choose Ovela sign-in when prompted. Ovela registers the exact `${IMMICH_URL}/api/oauth/mobile-redirect` callback; Immich forwards that HTTPS callback to `app.immich:///oauth-callback` on the phone. The generated configuration enables this mobile override, so no custom app build or mobile client secret is needed.
+
+For remote use, configure valid HTTPS on both the Photos and Ovela origins before running `./ovela up`. That command updates both Immich configuration and Ovela's callback allowlist. The native app retains Immich's own interface.
+
 ## Storage
 
 This installation starts with an empty library. It does not connect to another Immich instance, scan your existing folders, or migrate photos.
