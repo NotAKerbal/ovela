@@ -3,7 +3,7 @@ import { officeTables } from './filesOfficeSchema';
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 export const role = v.union(v.literal('admin'), v.literal('member'));
-export const icon = v.union(v.literal('photos'), v.literal('files'), v.literal('media'), v.literal('notes'));
+export const icon = v.union(v.literal('photos'), v.literal('files'), v.literal('media'), v.literal('notes'), v.literal('games'));
 export default defineSchema({
   ...officeTables,
   ...fileLinkTables,

@@ -66,7 +66,7 @@ export const saveApplication = mutation({ args: { id: v.optional(v.id('applicati
   if (description.length > 160) throw new ConvexError('Keep the description under 160 characters.');
   const url = args.url.trim();
   if (url) { let parsed: URL; try { parsed = new URL(url); } catch { throw new ConvexError('Enter a complete http or https URL.'); } if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password || url.length > 2048) throw new ConvexError('Use an http or https URL without credentials.'); }
-  const palette = { photos: ['#bcc5ac', '#516348'], files: ['#d8c6a5', '#80633d'], media: ['#aebfc6', '#456575'], notes: ['#d4b7a7', '#875e4a'] };
+  const palette = { photos: ['#bcc5ac', '#516348'], files: ['#d8c6a5', '#80633d'], media: ['#aebfc6', '#456575'], notes: ['#d4b7a7', '#875e4a'], games: ['#c6b5d3', '#715581'] };
   const [color, ink] = palette[args.icon];
   const data = { name, description, url, icon: args.icon, color, ink };
   if (args.id) { const existing = await ctx.db.get(args.id); if (!existing) throw new ConvexError('Application not found.'); if (existing.provider && url !== existing.url) throw new ConvexError(`Configure this provider address using ${existing.provider === 'immich' ? 'IMMICH_URL' : 'PELICAN_URL'}.`); await ctx.db.patch(args.id, data); return args.id; }

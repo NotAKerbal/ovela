@@ -64,15 +64,20 @@ export const configurePelican = internalMutation({
       (app) => app.provider === "pelican",
     );
     if (existing) {
-      await ctx.db.patch(existing._id, { url: parsed.origin });
+      // Upgrade the original Media placeholder without overwriting custom styling.
+      const originalStyle = existing.icon === "media" && existing.color === "#aebfc6" && existing.ink === "#456575";
+      await ctx.db.patch(existing._id, {
+        url: parsed.origin,
+        ...(originalStyle ? { icon: "games" as const, color: "#c6b5d3", ink: "#715581" } : {}),
+      });
       return;
     }
     await ctx.db.insert("applications", {
       name: "Games",
       description: "Your servers, together.",
-      icon: "media",
-      color: "#aebfc6",
-      ink: "#456575",
+      icon: "games",
+      color: "#c6b5d3",
+      ink: "#715581",
       provider: "pelican",
       url: parsed.origin,
     });

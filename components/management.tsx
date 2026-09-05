@@ -5,11 +5,11 @@ import { api } from '@/convex/_generated/api';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Switch from '@radix-ui/react-switch';
-import { Search, ChevronRight, Image, Folder, Play, AlignLeft, X, Plus, Copy, Check } from 'lucide-react';
+import { Search, ChevronRight, Image, Folder, Play, AlignLeft, Gamepad2, X, Plus, Copy, Check } from 'lucide-react';
 import { SiteHeader } from './site-header';
 import { PageSkeleton } from './auth-gate';
 
-const iconSet = { photos: Image, files: Folder, media: Play, notes: AlignLeft };
+const iconSet = { photos: Image, files: Folder, media: Play, notes: AlignLeft, games: Gamepad2 };
 export function errorMessage(error: unknown) { return error && typeof error === 'object' && 'data' in error && typeof error.data === 'string' ? error.data : 'Could not save your changes. Please try again.'; }
 type Role = 'admin' | 'member';
 type Application = Doc<'applications'>;

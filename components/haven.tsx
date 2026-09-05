@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
-import { Image, Folder, Play, AlignLeft, ArrowUpRight, X } from 'lucide-react';
+import { Image, Folder, Play, AlignLeft, Gamepad2, ArrowUpRight, X } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { type HavenApp } from '@/lib/apps';
 import { useQuery } from 'convex/react';
@@ -9,7 +9,7 @@ import { api } from '@/convex/_generated/api';
 import { useRouter } from 'next/navigation';
 import { SiteHeader } from './site-header';
 
-const icons = { photos: Image, files: Folder, media: Play, notes: AlignLeft };
+const icons = { photos: Image, files: Folder, media: Play, notes: AlignLeft, games: Gamepad2 };
 type Paint = { x: number; y: number; size: number; key: number };
 
 function AppTile({ app, index, onOpen }: { app: HavenApp; index: number; onOpen: (app: HavenApp) => void }) {
