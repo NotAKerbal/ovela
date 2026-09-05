@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
-import { Image, Folder, Play, AlignLeft, ArrowUpRight, RotateCcw, X } from 'lucide-react';
+import { Image, Folder, Play, AlignLeft, ArrowUpRight, X } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { type HavenApp } from '@/lib/apps';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { useRouter } from 'next/navigation';
 import { SiteHeader } from './site-header';
 
 const icons = { photos: Image, files: Folder, media: Play, notes: AlignLeft };
@@ -52,7 +53,20 @@ function AppTile({ app, index, onOpen }: { app: HavenApp; index: number; onOpen:
 export function Haven() {
   const available = useQuery(api.management.home);
   const apps = available?.map(app => ({ ...app, id: app._id, href: app.url || undefined }));
-  const [entrance, setEntrance] = useState(0);
+  const router = useRouter();
+  const [leaving, setLeaving] = useState(false);
+  const departure = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (departure.current) clearTimeout(departure.current); }, []);
+
+  function openManage() {
+    if (departure.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      router.push('/manage');
+      return;
+    }
+    setLeaving(true);
+    departure.current = setTimeout(() => router.push('/manage'), 760);
+  }
   const [selected, setSelected] = useState<HavenApp | null>(null);
   const lastApp = useRef<string | null>(null);
   const SelectedIcon = selected ? icons[(selected.icon ?? selected.id) as keyof typeof icons] ?? Folder : Folder;
@@ -64,8 +78,8 @@ export function Haven() {
   }
 
   return <>
-    <SiteHeader action={<button className="replay" onClick={() => setEntrance(n => n + 1)} aria-label="Replay entrance animation"><RotateCcw size={16} /><span>Replay</span></button>} />
-    <main className="home"><h1 className="sr-only">Your applications</h1>{apps === undefined ? <div className="app-grid" aria-busy="true" aria-label="Loading applications">{[0,1,2,3].map(i => <div className="skeleton skeleton-tile" key={i} />)}</div> : apps.length === 0 ? <div className="empty-state"><h2>No applications yet</h2><p>Your applications will appear here when an administrator adds access.</p></div> : <ul key={entrance} className="app-grid" aria-label="Applications">{apps.map((app, index) => <AppTile key={app.id} app={app} index={index} onOpen={openApp} />)}</ul>}</main>
+    <SiteHeader onManageNavigate={openManage} />
+    <main className={`home${leaving ? ' home-leaving' : ''}`} inert={leaving}><h1 className="sr-only">Your applications</h1>{apps === undefined ? <div className="app-grid" aria-busy="true" aria-label="Loading applications">{[0,1,2,3].map(i => <div className="skeleton skeleton-tile" key={i} />)}</div> : apps.length === 0 ? <div className="empty-state"><h2>No applications yet</h2><p>Your applications will appear here when an administrator adds access.</p></div> : <ul className="app-grid" aria-label="Applications">{apps.map((app, index) => <AppTile key={app.id} app={app} index={index} onOpen={openApp} />)}</ul>}</main>
     <Dialog.Root open={!!selected} onOpenChange={open => { if (!open) setSelected(null); }}>
       <Dialog.Portal><Dialog.Overlay className="dialog-overlay" /><Dialog.Content className="app-preview" style={{ '--tint': selected?.color, '--ink': selected?.ink } as CSSProperties}
         onCloseAutoFocus={event => { event.preventDefault(); document.querySelector<HTMLButtonElement>(`button[aria-label="Open ${lastApp.current}"]`)?.focus(); }}>
