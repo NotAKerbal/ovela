@@ -23,7 +23,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline
 .glass-face::after { content: ''; position: absolute; inset: 0; background: url('/grain.svg'); opacity: .24; mix-blend-mode: multiply; }
 .tile-art { position: relative; display: grid; place-items: center; flex: 1; padding: 35px 0 8px; z-index: 3; pointer-events: none; }
 .sculpted-icon { width: 98px; height: 98px; color: var(--ink); fill: color-mix(in srgb, var(--tint) 82%, #fff); filter: drop-shadow(0 -1px 0 #fff) drop-shadow(2px 5px 2px #62684a38); opacity: .85; transform: translateY(0); transition: transform 400ms cubic-bezier(.2,.8,.2,1); }
-.icon-photos { width: 108px; }.icon-media { width: 86px; }.icon-notes { fill: none; }
+.icon-photos { width: 108px; }.icon-media { width: 86px; }.icon-notes, .icon-games { fill: none; }
 .tile-caption { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; padding: 24px 30px 26px; pointer-events: none; }
 .app-name { font-size: 25px; font-weight: 500; letter-spacing: -.7px; }
 .open-arrow { opacity: .42; transition: opacity 250ms, transform 250ms; }
